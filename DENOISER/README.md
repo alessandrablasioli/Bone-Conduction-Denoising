@@ -2,7 +2,7 @@
 
 ![tests badge](https://github.com/facebookresearch/denoiser/workflows/tests/badge.svg)
 
-This is only for the validation of the results of the following project, that was uses as a baseline. You can find the validated results in the outputs folder.
+This is only for the validation of the results of the following project, which was used as a baseline. You can find the validated results in the outputs folder.
 
 
 We provide a [PyTorch][pytorch] implementation of the paper: [Real Time Speech Enhancement in the Waveform Domain][arxiv].
