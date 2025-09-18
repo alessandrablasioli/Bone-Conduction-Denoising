@@ -1,0 +1,30 @@
+project_name: Speech MOS Evaluation
+description: Evaluate speech quality across noisy, enhanced, and clean samples.
+criteria:
+- name: MOS
+  description: Rate the overall speech quality from 1 (bad) to 5 (excellent).
+  type: mos
+  scale_min: 1
+  scale_max: 5
+- name: Intelligibility
+  description: How easy is it to understand the speech? (1=unintelligible, 5=perfectly
+    clear)
+  type: mos
+  scale_min: 1
+  scale_max: 5
+- name: Pleasantness
+  description: How pleasant is the voice to listen to? (1=unpleasant, 5=very pleasant)
+  type: mos
+  scale_min: 1
+  scale_max: 5
+conditions:
+- name: Noisy
+  folder: noisy
+- name: Enhanced
+  folder: enhanced
+- name: Clean
+  folder: clean
+playback_settings:
+  sample_rate: 16000
+  allow_replay: true
+  randomize_order: true
