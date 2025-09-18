@@ -1,1 +1,2 @@
 outputs/** filter=lfs diff=lfs merge=lfs -text
+outputs/valentini_demucs_done filter=lfs diff=lfs merge=lfs -text
