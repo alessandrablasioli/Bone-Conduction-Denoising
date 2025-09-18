@@ -2,6 +2,9 @@
 
 ![tests badge](https://github.com/facebookresearch/denoiser/workflows/tests/badge.svg)
 
+This is only for the validation of the results of the following project, that was uses as a baseline. You can find the validated results in the outputs folder.
+
+
 We provide a [PyTorch][pytorch] implementation of the paper: [Real Time Speech Enhancement in the Waveform Domain][arxiv].
 In which, we present a causal speech enhancement model working on the raw waveform that runs in real-time on a laptop CPU.
 The proposed model is based on an encoder-decoder architecture with skip-connections. It is optimized on both time and frequency domains, using multiple loss functions.
