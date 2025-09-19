@@ -135,8 +135,8 @@ class Audioset:
                 out = F.pad(out, (0, num_frames - out.shape[-1]))
             
             if self.bone:
-                #out = filter_bone_conduction(out,50,400, 16000, order=3)
-                out = build_bc_from_waveform_ac(out, response_path="/home/ms_ablasioli/alessandra/denoiser_backup_bcn/response.npy")
+                #out = filter_bone_conduction(out,50,400, 16000, order=3) #Method 1
+                out = build_bc_from_waveform_ac(out, response_path="/home/ms_ablasioli/alessandra/denoiser_backup_bcn/response.npy") #Method 2
 
                
             if self.with_path:
