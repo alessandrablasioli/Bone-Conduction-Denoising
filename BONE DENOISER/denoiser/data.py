@@ -4,7 +4,7 @@ import logging
 import os
 import re
 
-from .audio_filter_bc import Audioset
+from .audio_filter_bc import Audioset # For Synth BC
 #from .audio import Audioset
 logger = logging.getLogger(__name__)
 
