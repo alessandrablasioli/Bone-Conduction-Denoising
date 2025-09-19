@@ -1,11 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.t
-
-# All rights reserved.
-#
-# This source code is licensed under the license found in the
-# LICENSE file in the root directory of this source tree.
-# author: adiyoss
-
+# Authored by Alessandra Blasioli
 import argparse
 from concurrent.futures import ProcessPoolExecutor
 import json
