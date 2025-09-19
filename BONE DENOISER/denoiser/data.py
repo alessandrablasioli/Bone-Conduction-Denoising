@@ -1,4 +1,4 @@
-# Authored by Alessandra Blasioli
+# This version was authored by Alessandra Blasioli
 import json
 import logging
 import os
@@ -7,40 +7,6 @@ import re
 from .audio_filter_bc import Audioset # For Synth BC
 #from .audio import Audioset
 logger = logging.getLogger(__name__)
-
-
-def match_dns(noisy, clean):
-    """match_dns.
-    Match noisy and clean DNS dataset filenames.
-
-    :param noisy: list of the noisy filenames
-    :param clean: list of the clean filenames
-    """
-    logger.debug("Matching noisy and clean for dns dataset")
-    noisydict = {}
-    extra_noisy = []
-    for path, size in noisy:
-        match = re.search(r'fileid_(\d+)\.wav$', path)
-        if match is None:
-            # maybe we are mixing some other dataset in
-            extra_noisy.append((path, size))
-        else:
-            noisydict[match.group(1)] = (path, size)
-    noisy[:] = []
-    extra_clean = []
-    copied = list(clean)
-    clean[:] = []
-    for path, size in copied:
-        match = re.search(r'fileid_(\d+)\.wav$', path)
-        if match is None:
-            extra_clean.append((path, size))
-        else:
-            noisy.append(noisydict[match.group(1)])
-            clean.append((path, size))
-    extra_noisy.sort()
-    extra_clean.sort()
-    clean += extra_clean
-    noisy += extra_noisy
 
 def match_files(noisy, clean, matching="sort"):
     """match_files.
