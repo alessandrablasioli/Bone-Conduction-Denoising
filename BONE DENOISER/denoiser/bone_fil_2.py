@@ -1,3 +1,4 @@
+# Authored by Alessandra Blasioli
 import librosa
 import numpy as np
 import scipy.signal as signal
