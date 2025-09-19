@@ -1,3 +1,4 @@
+# Authored by Alessandra Blasioli
 import os
 import shutil
 import json
@@ -73,48 +74,4 @@ metadata_path = os.path.join(output_dir, "metadata.json")
 with open(metadata_path, "w") as f:
     json.dump(metadata, f, indent=4)
 print(f"Saved metadata to {metadata_path}")
-'''
-config = {
-    "project_name": "Speech MOS Evaluation",
-    "description": "Evaluate speech quality across noisy, enhanced, and clean samples.",
-    "criteria": [
-        {
-            "name": "MOS",
-            "description": "Rate the overall speech quality from 1 (bad) to 5 (excellent).",
-            "type": "mos",
-            "scale_min": 1,
-            "scale_max": 5
-        },
-        {
-            "name": "Intelligibility",
-            "description": "How easy is it to understand the speech? (1=unintelligible, 5=perfectly clear)",
-            "type": "mos",
-            "scale_min": 1,
-            "scale_max": 5
-        },
-        {
-            "name": "Pleasantness",
-            "description": "How pleasant is the voice to listen to? (1=unpleasant, 5=very pleasant)",
-            "type": "mos",
-            "scale_min": 1,
-            "scale_max": 5
-        }
-    ],
-    "conditions": [
-        {"name": "Noisy", "folder": "noisy"},
-        {"name": "Enhanced", "folder": "enhanced"},
-        {"name": "Clean", "folder": "clean"}
-    ],
-    "playback_settings": {
-        "sample_rate": TARGET_SR,
-        "allow_replay": True,
-        "randomize_order": True
-    }
-}
-
-config_path = os.path.join(output_dir, "config.yaml")
-with open(config_path, "w") as f:
-    yaml.dump(config, f, sort_keys=False)
-print(f"Saved config to {config_path}")
-'''
 print("\nMOS-Bench project prepared successfully!")
