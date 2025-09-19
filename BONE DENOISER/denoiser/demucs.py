@@ -1,10 +1,3 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
-# All rights reserved.
-#
-# This source code is licensed under the license found in the
-# LICENSE file in the root directory of this source tree.
-# author: adefossez
-
 import math
 import time
 import torch as th
@@ -310,6 +303,7 @@ Demucs in frequency domain
 class DemucsFrequency(nn.Module):
     """
     Demucs speech enhancement model in frequency domain.
+    Authored by Alessandra Blasioli
     
     - hidden: Number of units in the hidden layers, default is 48.
     - depth: Number of layers or the depth of the model, default is 5.
@@ -396,226 +390,6 @@ class DemucsFrequency(nn.Module):
         return output
 
 
-'''
-
-Double input and double LSTM demucs
-    - time domain: DemucsDouble
-    - frequency domain: DemucsFrequencyDualLSTM
-
-class DemucsDouble(nn.Module):
-    
-    
-    The class Demucs Double simply implements a Demucs with 2 encoders at the beginning, since what 
-    we want to do is to give two inputs to the network, an air conduction audio and a bone conductione one.
-
-    We combine the input before the lstm. 
-
-
-
-    encoder1 ---
-                  concat ----- (lstm , lstm) ---- decoder
-                                  
-    encoder2 ---
-    
-    Args:
-        - chin (int): number of input channels.
-        - chout (int): number of output channels.
-        - hidden (int): number of initial hidden channels.
-        - depth (int): number of layers.
-        - kernel_size (int): kernel size for each layer.
-        - stride (int): stride for each layer.
-        - causal (bool): if false, uses BiLSTM instead of LSTM.
-        - resample (int): amount of resampling to apply to the input/output.
-            Can be one of 1, 2 or 4.
-        - growth (float): number of channels is multiplied by this for every layer.
-        - max_hidden (int): maximum number of channels. Can be useful to
-            control the size/speed of the model.
-        - normalize (bool): if true, normalize the input.
-        - glu (bool): if true uses GLU instead of ReLU in 1x1 convolutions.
-        - rescale (float): controls custom weight initialization.
-            See https://arxiv.org/abs/1911.13254.
-        - floor (float): stability flooring when normalizing.
-        - sample_rate (float): sample_rate used for training the model.
-    
-    @capture_init
-    def __init__(self,
-                 chin=1,
-                 chout=1,
-                 hidden=48,
-                 depth=5,
-                 kernel_size=8,
-                 stride=4,
-                 causal=True,
-                 #resample=4,
-                 growth=2,
-                 max_hidden=10_000,
-                 normalize=True,
-                 glu=True,
-                 rescale=0.1,
-                 floor=1e-3,
-                 sample_rate=16_000):
-
-        super(DemucsDouble, self).__init__()
-       # if resample not in [1, 2, 4]:
-            #raise ValueError("Resample should be 1, 2 or 4.")
-
-        self.chin = chin
-        self.chout = chout
-        self.hidden = hidden
-        self.depth = depth
-        self.kernel_size = kernel_size
-        self.stride = stride
-        self.causal = causal
-        self.floor = floor
-        #self.resample = resample
-        self.normalize = normalize
-        self.sample_rate = sample_rate
-
-        # for air conduction audio
-        self.encoder1 = nn.ModuleList()
-        self.decoder = nn.ModuleList()
-
-
-        # for bone conduction audio
-        self.encoder2 = nn.ModuleList()
-
-
-
-        activation = nn.GLU(1) if glu else nn.ReLU()
-        ch_scale = 2 if glu else 1
-
-        for index in range(depth):
-            encode = []
-            encode += [
-                nn.Conv1d(chin, hidden, kernel_size, stride),
-                nn.ReLU(),
-                nn.Conv1d(hidden, hidden * ch_scale, 1), activation,
-            ]
-            self.encoder1.append(nn.Sequential(*encode))
-            self.encoder2.append(nn.Sequential(*encode))
-            decode = []
-            decode += [
-                nn.Conv1d(hidden, ch_scale * hidden, 1), activation,
-                nn.ConvTranspose1d(hidden, chout, kernel_size, stride),
-            ]
-            if index > 0:
-                decode.append(nn.ReLU())
-            self.decoder.insert(0, nn.Sequential(*decode))
-            chout = hidden
-            chin = hidden
-            hidden = min(int(growth * hidden), max_hidden)
-
-        self.lstm = BLSTM(chin, bi=not causal)
-        #self.fc = nn.Linear(768, 768)
-        
-        if rescale:
-            rescale_module(self, reference=rescale)
-
-    def valid_length(self, length):
-        """
-        Return the nearest valid length to use with the model so that
-        there is no time steps left over in a convolutions, e.g. for all
-        layers, size of the input - kernel_size % stride = 0.
-
-        If the mixture has a valid length, the estimated sources
-        will have exactly the same length.
-        """
-        length = math.ceil(length )#* self.resample)
-        for idx in range(self.depth):
-            length = math.ceil((length - self.kernel_size) / self.stride) + 1
-            length = max(length, 1)
-        for idx in range(self.depth):
-            length = (length - 1) * self.stride + self.kernel_size
-        length = int(math.ceil(length)) #/ self.resample))
-        return int(length)
-
-    @property
-    def total_stride(self):
-        return self.stride ** self.depth #// self.resample
-
-    def forward(self, mix1 ,mix2):
-        if mix1.dim() == 2:
-            mix1 = mix1.unsqueeze(1)
-        if mix2.dim() == 2:
-                    mix2 = mix2.unsqueeze(1)
-
-
-        if self.normalize:
-            mono1 = mix1.mean(dim=1, keepdim=True)
-            std1 = mono1.std(dim=-1, keepdim=True)
-            mix1 = mix1 / (self.floor + std1)
-
-            mono2 = mix2.mean(dim=1, keepdim=True)
-            std2 = mono2.std(dim=-1, keepdim=True)
-            mix2 = mix2 / (self.floor + std2)
-        else:
-            std1 = std2 = 1
-
-
-
-        length = mix1.shape[-1]
-        x1 = mix1
-        x2 = mix2
-        
-        x1 = F.pad(x1, (0, self.valid_length(length) - length))
-        x2 = F.pad(x2, (0, self.valid_length(length) - length))
-
-
-        #if self.resample == 2:
-            #x1 = upsample2(x1)
-            #x2 = upsample2(x2)
-        #elif self.resample == 4:
-            #x1 = upsample2(x1)
-            #x1 = upsample2(x1)
-            #x2 = upsample2(x2)
-            #x2 = upsample2(x2)
-            
-        skips1 = []
-        for encode in self.encoder1:
-            x1 = encode(x1)
-            skips1.append(x1)
-
-        skips2 = []
-        for encode in self.encoder2:
-            x2 = encode(x2)
-            skips2.append(x2)
-        #print(x1.shape, x2.shape)
-        combined = th.cat((x1, x2), dim=2)
-        #skip_fc = []
-        #put a dense layer here and use it as skip connection 
-        #combined = self.fc(combined.permute(0, 2, 1))
-        #skip_fc = combined
-        combined = combined.permute(2, 0, 1)
-        
-        combined, _ = self.lstm(combined)
-        combined = combined.permute(1, 2, 0)
-
-
-        #another interesting thing: remove skip of ac and keep only bc skip(skip2)
-        
-        for decode in self.decoder:
-            skip1= skips1.pop(-1)
-            skip2 =skips2.pop(-1)
-            #skip = th.cat((skip1, skip2), dim=2) 
-            #skip = skip_fc.pop(-1)
-            
-            #skip2 = F.interpolate(skip2, size=combined.size(2), mode='linear')
-            skip2 = F.pad(skip2, (0, combined.size(2) - skip2.size(2)))
-            combined = combined #+ skip2
-            combined = decode(combined)
-        #if self.resample == 2:
-            #combined = downsample2(combined)
-        #elif self.resample == 4:
-            #combined = downsample2(combined)
-            #combined = downsample2(combined)
-
-        combined = combined[..., :length]
-        #print(combined.shape)
-        return combined * std1
-
-'''
-
-
 
 class DemucsDouble(nn.Module):
     
@@ -625,6 +399,7 @@ class DemucsDouble(nn.Module):
 
     We combine the input before the lstm. 
 
+    Authored by Alessandra Blasioli
 
 
     encoder1 ---
@@ -831,7 +606,7 @@ class DemucsDouble(nn.Module):
 
 class DemucsFrequencyDualLSTM(nn.Module):
     """
-    
+    Authored by Alessandra Blasioli
     The class DemucsFrequencyDualLSTM implements a frequency domain denoiser inspired by Demucs model
     with 2 inputs, the ac audio and the bc audio.
 
@@ -953,15 +728,17 @@ def forward(self, mix1, mix2):
 
         return output
 '''
+# --------------------------------  STILL TO FINISH AND TEST -----------------------
+# Future Works
 
 '''
 Double input and MH Attention demucs
     - time domain: DemucsDoubleAttention
     - frequency domain: DemucsFrequencyAttention
-
+    Authored by Alessandra Blasioli
 '''
 
-# STILL TO FINISH AND TEST
+
 class PositionalEncoding(nn.Module):
 
     def __init__(self, d_model, dropout=0.1, max_len=5000):
@@ -1127,7 +904,7 @@ def forward(self, mix1, mix2):
     
 '''
 
-    
+# Authored by Alessandra Blasioli    
 class DemucsDoubleAttention(nn.Module):
     @capture_init
     def __init__(self,
@@ -1573,7 +1350,7 @@ if __name__ == "__main__":
 
 
 
-#------------experimens 
+#------------ EXPERIMENTS---------------------
 '''
 
 
