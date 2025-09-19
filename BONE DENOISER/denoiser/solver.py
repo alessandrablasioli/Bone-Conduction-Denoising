@@ -5,6 +5,8 @@
 # LICENSE file in the root directory of this source tree.
 # author: adiyoss
 
+#This version was authored by Alessandra Blasioli
+
 import json
 import logging
 from pathlib import Path
