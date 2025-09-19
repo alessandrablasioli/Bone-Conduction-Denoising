@@ -1,0 +1,14 @@
+We developed four versions of this transformation filter:
+
+Manual filter design – Based on a visual comparison of the frequency responses of bone- and air-conduction signals.
+Using a combination of band-pass and low-pass filters, we achieved good results both in listening tests and in matching the target frequency curve.
+
+2–4. VibVoice-inspired approaches – Following ideas from VibVoice, we implemented three alternatives:
+
+an Otsu-based filtering method (as in the original VibVoice work),
+
+a triangle-filtering method, and
+
+a spectrogram-difference method, which models the difference between bone and air spectrograms.
+
+Ultimately, we retained only the Otsu-based filter and the manually designed filter as our synthetic bone-conduction generators.
