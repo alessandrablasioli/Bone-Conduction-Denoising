@@ -5,3 +5,6 @@ outputs/demucsdouble.causal=1,dset=valentini_method2/ filter=lfs diff=lfs merge=
 outputs/demucsdouble.causal=1,dset=valentini_method1/ filter=lfs diff=lfs merge=lfs -text
 outputs/*** filter=lfs diff=lfs merge=lfs -text
 outputs/*** filter=lfs diff=lfs merge=lfs -text
+outputs/*** filter=lfs diff=lfs merge=lfs -text
+outputs/*** filter=lfs diff=lfs merge=lfs -text
+outputs/*** filter=lfs diff=lfs merge=lfs -text
