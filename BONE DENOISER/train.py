@@ -5,7 +5,7 @@
 # This source code is licensed under the license found in the
 # LICENSE file in the root directory of this source tree.
 # authors: adiyoss and adefossez
-
+# This Version was authored by Alessandra Blasioli
 import logging
 import os
 
