@@ -1,3 +1,4 @@
+# This version was edited and authored by Alessandra Blasioli
 import math
 import time
 import torch as th
@@ -57,7 +58,7 @@ def init_kernels(win_len, win_inc, fft_len, win_type=None, invers=False):
     return th.from_numpy(kernel.astype(np.float32)), th.from_numpy(window[None,:,None].astype(np.float32))
 
 '''
-Convolutional layer with STFT calculation. Authored by Manuele Rusci (GWT)
+Convolutional layer with STFT calculation. Authored by Manuele Rusci (GreenWaves Technologies)
 '''
 class ConvSTFT(nn.Module):
     def __init__(self, win_len, win_inc, fft_len=None, win_type='hamming', feature_type='real', fix=True):
@@ -91,7 +92,7 @@ class ConvSTFT(nn.Module):
             return mags, phase
         
 '''
-Convolutional layer with iSTFT calculation. Authored by Manuele Rusci (GWT)
+Convolutional layer with iSTFT calculation. Authored by Manuele Rusci (GreenWaves Technologies)
 '''
 class ConviSTFT(nn.Module):
 
@@ -1350,9 +1351,8 @@ if __name__ == "__main__":
 
 
 
-#------------ EXPERIMENTS---------------------
+#------------ EXPERIMENTS---------------------|
 '''
-
 
 class DemucsFrequencyBC(nn.Module):
    

@@ -6,6 +6,7 @@
 # author: adiyoss
 
 # This version was authored by Alessandra Blasioli
+# The commented version does not use bone conduction
 
 import argparse
 from concurrent.futures import ProcessPoolExecutor

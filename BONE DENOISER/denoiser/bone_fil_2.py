@@ -1,4 +1,4 @@
-# Authored by Alessandra Blasioli
+# Authored by Alessandra Blasioli based on the work of VibVoice
 import librosa
 import numpy as np
 import scipy.signal as signal
@@ -118,89 +118,7 @@ def compute_and_save_response(
     response /= len(air_files)
     np.save(out_path, response)
     print(f"Response saved to {out_path}")
-'''
-def build_bc_from_waveform_ac(
-    wave_ac,
-    rate=16000,
-    folder_clean_air="/home/ms_ablasioli/alessandra/denoiser_backup_bcn/vibravox_final/clean_air_train",
-    folder_clean_bone="/home/ms_ablasioli/alessandra/denoiser_backup_bcn/clean_bone_train",
-    T=5,
-    seg_len_mic=640,
-    overlap_mic=320,
-    segment=0.83,
-    stride=0.83
-):
-    """
-    Converts an air conduction waveform into a bone conduction waveform
-    using a response estimated from all clean files in the clean_air and clean_bone folders.
-    
-    Args:
-        wave_ac: numpy array or torch tensor 1D, air conduction signal
-        rate: sample rate
-        folder_clean_air: folder containing clean air files
-        folder_clean_bone: folder containing clean bone files
-        T, seg_len_mic, overlap_mic, segment, stride: framing parameters
 
-    Returns:
-        bc_wave: torch tensor, estimated bone conduction waveform, shape [1, N]
-    """
-
-    # --- Get sorted list of clean files and check they match ---
-    air_files = sorted(os.listdir(folder_clean_air))
-    bone_files = sorted(os.listdir(folder_clean_bone))
-    assert len(air_files) == len(bone_files), "Clean air and bone folders must have the same number of files"
-
-    # --- Derived parameters for STFT framing ---
-    freq_bin_high = int(rate / rate * int(seg_len_mic / 2)) + 1
-    time_bin = int(segment * rate / (seg_len_mic - overlap_mic)) + 1
-    time_stride = int(stride * rate / (seg_len_mic - overlap_mic))
-
-    # --- Initialize response matrix ---
-    response = np.zeros((2, freq_bin_high))
-
-    # --- Loop over all clean file pairs to accumulate the response ---
-    for f_air, f_bone in zip(air_files, bone_files):
-        path_air = os.path.join(folder_clean_air, f_air)
-        path_bone = os.path.join(folder_clean_bone, f_bone)
-
-        # Load clean AC and BC files and compute their STFT
-        _, Zxx_air_clean, _ = load_audio_n(path_air, T, seg_len_mic, overlap_mic, rate, normalize=True)
-        _, Zxx_bone_clean, _ = load_audio_n(path_bone, T, seg_len_mic, overlap_mic, rate, normalize=True)
-
-        # Update the response with clips from each segment
-        for j in range(int((T - segment) / stride) + 1):
-            clip2 = Zxx_air_clean[:freq_bin_high, j * time_stride:j * time_stride + time_bin]
-            clip1 = Zxx_bone_clean[:, j * time_stride:j * time_stride + time_bin]
-            response = transfer_function(clip1, clip2, response)
-
-    # --- Average the accumulated response over all clean files ---
-    response /= len(air_files)
-    f = response[0]
-    v = response[1]
-
-    # --- Convert input AC waveform to numpy if it's a torch tensor ---
-    if isinstance(wave_ac, torch.Tensor):
-        wave_ac = wave_ac.numpy().squeeze()
-
-    # Compute STFT of the input AC waveform
-    Zxx_air, phase = frequencydomain(wave_ac, seg_len=seg_len_mic, overlap=overlap_mic, rate=rate, mfcc=False)
-
-    # --- Apply the response to the AC spectrogram ---
-    time_bin_test = Zxx_air.shape[-1]
-    response_matrix = np.tile(np.expand_dims(f, axis=1), (1, time_bin_test))
-    for j in range(time_bin_test):
-        response_matrix[:, j] += np.random.normal(0, v, (freq_bin_high))
-
-    acc = response_matrix / np.max(f) * Zxx_air[:, :]
-
-    # --- Reconstruct the BC waveform from the modified spectrogram ---
-    Zxx_rec = acc * phase
-    _, bc_wave = signal.istft(Zxx_rec, nperseg=seg_len_mic, noverlap=overlap_mic, fs=rate)
-
-    # Return as torch tensor with a channel dimension
-    return torch.tensor(bc_wave).unsqueeze(0).float()
-
-'''
 
 def build_bc_from_waveform_ac(
     wave_ac,

@@ -1,4 +1,4 @@
-#Authored by Alessandra Blasioli
+#This version was Authored by Alessandra Blasioli, originally from adefossez
 
 from collections import namedtuple
 import json

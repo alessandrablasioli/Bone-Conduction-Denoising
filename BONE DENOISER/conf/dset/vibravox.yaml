@@ -6,5 +6,5 @@ dset:
   noisy_dir: "/home/ms_ablasioli/alessandra/denoiser_backup_bcn/egs/vibravox/tt/"
   bone_json: "/home/ms_ablasioli/alessandra/denoiser_backup_bcn/egs/vibravox/tt/bone.json"
   bone_dir: "/home/ms_ablasioli/alessandra/denoiser_backup_bcn/egs/vibravox/tt/"
-  matching: sort       # how to match noisy and clean files. For Valentini and Vibravox, use sort, for DNS, use dns.
+  matching: sort       # how to match noisy and clean files. For Valentini and Vibravox, use sort.
 eval_every: 2

@@ -15,10 +15,10 @@ def match_files(noisy, clean, matching="sort"):
     :param clean: list of the clean filenames
     :param matching: the matching function, at this point only sort is supported
     """
-    if matching == "dns":
+    #if matching == "dns":
         # dns dataset filenames don't match when sorted, we have to manually match them
-        match_dns(noisy, clean)
-    elif matching == "sort":
+        #match_dns(noisy, clean)
+    if matching == "sort":
         noisy.sort()
         clean.sort()
     else:
