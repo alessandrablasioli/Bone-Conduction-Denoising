@@ -141,11 +141,10 @@ Iterate on the noises lists to mix clean bc and ac speech with noise and save th
 '''
 
 for (i, speech_waveform), (j , speech_waveformbc) in zip(enumerate(speech_list),enumerate(speech_listbc)):
-    #for j in range(10):
         noisy_speech, noisy_speechbc = make_noise(speech_waveform, speech_waveformbc, noise_list, noise_listbc)
         
-        output_filename = os.path.join(noisedir, f"output{i}.wav") #"output{i}_version_{j}.wav"
+        output_filename = os.path.join(noisedir, f"output{i}.wav")
         wavfile.write(output_filename, sample_rate, noisy_speech)
 
-        output_filenamebc = os.path.join(noisedirbc, f"output{j}.wav") #"output{i}_version_{j}.wav"
+        output_filenamebc = os.path.join(noisedirbc, f"output{j}.wav")
         wavfile.write(output_filenamebc, sample_rate, noisy_speechbc)
