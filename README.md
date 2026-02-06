@@ -25,6 +25,14 @@ Specifically, the `DemucsDouble` network was developed for the time domain, and 
 └─ README.md # This file
  ```
 
+# DemucsDouble - Time Domain
+
+![DemucsDouble](https://github.com/alessandrablasioli/Bone-Conduction-Denoising/blob/main/img/d_double.png)
+
+# DemucsFrequencyDualLSTM - Frequency Domain
+
+![DemucsFrequencyDualLSTM](https://github.com/alessandrablasioli/Bone-Conduction-Denoising/blob/main/img/demd.png)
+
 # Results
 
 ## Results of the different models evaluated on PESQ and STOI
